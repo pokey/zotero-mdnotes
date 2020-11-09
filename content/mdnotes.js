@@ -152,7 +152,7 @@ function getTags(item) {
     }
   }
 
-  return tagsString + tagsArray.join(", ");
+  return tagsString + tagsArray.sort().join(", ");
 }
 
 function getCollectionNames(item) {
@@ -165,7 +165,11 @@ function getCollectionNames(item) {
     collectionArray.push(`#${lowerCaseDashTitle(collectionName)}`);
   }
 
-  return `* Topics: ${collectionArray.join(", ")}\n`;
+  if (collectionArray.length) {
+    return `* Topics: ${collectionArray.join(", ")}\n`;
+  } {
+    return "";
+  }
 }
 
 function getRelatedItems(item) {
@@ -185,13 +189,17 @@ function getRelatedItems(item) {
     }
   }
 
-  return `* Related: ${relatedItemsArray.join(", ")}\n`;
+  if (relatedItemsArray.length) {
+    return `* Related: ${relatedItemsArray.join(", ")}\n`;
+  } else {
+    return "";
+  }
 }
 
 function getMetadata(item) {
   let metadataString = "# Metadata\n";
 
-  metadataString += `* Title: ${item.getField("title")}\n`
+  metadataString += `* Title: *‘${item.getField("title")}’*\n`
 
   if (getPref("export_type")) {
     var zoteroType = Zotero.ItemTypes.getName(item.getField("itemTypeID"));
@@ -503,7 +511,9 @@ function getFileContents(itemExport) {
   }
   fileContents += `${formatInternalLink(itemExport.date)}.\n`;
 
-  fileContents += `\n> ${itemExport.abstract}\n`;
+  if (itemExport.abstract) {
+    fileContents += `\n> ${itemExport.abstract}\n`;
+  }
 
   if (getPref("create_notes_file")) {
     fileContents += "\n# Notes\n";
