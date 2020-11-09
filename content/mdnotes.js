@@ -66,7 +66,7 @@ function get_month_mm_format(d) {
 }
 
 function getDates(item) {
-  let dateString = "* Date: ";
+  let dateString = "| Date | ";
   if (getPref("link_dates")){
     dateString += `${formatInternalLink(item.getField("date"))}\n`;
   } else {
@@ -75,9 +75,9 @@ function getDates(item) {
   const date = new Date(item.getField("dateAdded"));
   var dateAddedStr = `${date.getFullYear()}-${get_month_mm_format(date)}-${day_of_the_month(date)}`;
   if (getPref("link_dates")){
-    dateString += `* Date added: ${formatInternalLink(dateAddedStr)}\n`;
+    dateString += `| Date added | ${formatInternalLink(dateAddedStr)}\n`;
   } else {
-    dateString += `* Date added: ${formatInternalLink(dateAddedStr, "no-links")}\n`;
+    dateString += `| Date added | ${formatInternalLink(dateAddedStr, "no-links")}\n`;
   }
 
   return dateString;
@@ -98,7 +98,7 @@ function getLocalLink(item) {
 }
 
 function getLinks(item) {
-  let linksString = "* Zotero links: ";
+  let linksString = "| Zotero links | ";
 
   if (getPref("export_local_library")) {
     linksString += `[Local library](${getLocalLink(item)})`;
@@ -116,12 +116,12 @@ function getURLs(item) {
 
   if (item.getField("DOI")) {
     let doi = item.getField("DOI");
-    linksString += `* DOI: [${doi}](${doi})\n`;
+    linksString += `| DOI | [${doi}](${doi})\n`;
   }
 
   if (item.getField("url")) {
     let url = item.getField("url");
-    linksString += `* URL: ${url}\n`;
+    linksString += `| URL | ${url}\n`;
   }
 
   return linksString;
@@ -135,7 +135,7 @@ function getTags(item) {
     tagsArray.push(mdnotesTag);
   }
 
-  const tagsString = "* Tags: ";
+  const tagsString = "| Tags | ";
   var itemTags = item.getTags();
 
   if (itemTags) {
@@ -166,7 +166,7 @@ function getCollectionNames(item) {
   }
 
   if (collectionArray.length) {
-    return `* Topics: ${collectionArray.join(", ")}\n`;
+    return `| Topics | ${collectionArray.join(", ")}\n`;
   } {
     return "";
   }
@@ -190,7 +190,7 @@ function getRelatedItems(item) {
   }
 
   if (relatedItemsArray.length) {
-    return `* Related: ${relatedItemsArray.join(", ")}\n`;
+    return `| Related | ${relatedItemsArray.join(", ")}\n`;
   } else {
     return "";
   }
@@ -199,21 +199,22 @@ function getRelatedItems(item) {
 function getMetadata(item) {
   let metadataString = "# Metadata\n";
 
-  metadataString += `* Title: *‘${item.getField("title")}’*\n`
+  metadataString += `| Title | *‘${item.getField("title")}’* |\n`
+  metadataString += `| --: | :-- |\n`
 
   if (getPref("export_type")) {
     var zoteroType = Zotero.ItemTypes.getName(item.getField("itemTypeID"));
     const itemType = typemap[zoteroType];
     if (getPref("link_type")){
-      metadataString += `* Type: #${lowerCaseDashTitle(itemType)}\n`;
+      metadataString += `| Type | #${lowerCaseDashTitle(itemType)}\n`;
     } else {
-      metadataString += `* Type: ${formatInternalLink(itemType, "no-links")}\n`;
+      metadataString += `| Type | ${formatInternalLink(itemType, "no-links")}\n`;
     }
 
   }
 
   if (getPref("export_authors")) {
-    metadataString +=  `* Authors: ${getAuthors(item)}\n`;
+    metadataString +=  `| Authors | ${getAuthors(item)}\n`;
   }
 
   if (getPref("export_dates")) {
@@ -222,7 +223,7 @@ function getMetadata(item) {
 
   var pubTitle = item.getField("publicationTitle", true, true);
   if (getPref("export_pub_title") && pubTitle) {
-    metadataString += `* Publication: ${formatInternalLink(pubTitle)}\n`;
+    metadataString += `| Publication | ${formatInternalLink(pubTitle)}\n`;
   }
 
   if (getPref("export_urls")) {
@@ -230,7 +231,7 @@ function getMetadata(item) {
   }
 
   if (getPref("export_citekey")) {
-    metadataString += `* Cite key: \`${getCiteKey(item)}\`\n`;
+    metadataString += `| Cite key | \`${getCiteKey(item)}\`\n`;
   }
 
   if (getPref("export_collections")) {
@@ -253,9 +254,9 @@ function getMetadata(item) {
     var pdfArray;
     pdfArray = getZoteroAttachments(item);
     if (pdfArray.length == 1) {
-      metadataString += `* PDF Attachments: ${pdfArray[0]}\n`;
+      metadataString += `| PDF Attachments | ${pdfArray[0]}\n`;
     } else if (pdfArray.length > 1) {
-      metadataString += `* PDF Attachments:\n\t- ${pdfArray.join('\n\t- ')}\n`;
+      metadataString += `| PDF Attachments | ${pdfArray.join(', ')}\n`;
     }
 
   }
