@@ -127,6 +127,19 @@ function getURLs(item) {
   return linksString;
 }
 
+// Based on https://github.com/retorquere/zotero-better-bibtex/blob/1d69fcc248abf7fe1315352aa06d419d97f5758b/content/ZoteroPane.ts#L142-L144
+function getCites(item) {
+  const extra = item.getField('extra') || ''
+  const citations = [...new Set(extra.split('\n').filter(line => line.startsWith('cites:')))]
+  if (citations.length) {
+    const citationsString = citations.map(line => `[[${line.substr(7)}]]`).join(", ")
+
+    return `| Cites | ${citationsString}\n`;
+  } else {
+    return '';
+  }
+}
+
 function getTags(item) {
   const tagsArray = [];
   let mdnotesTag = getPref("import_tag");
@@ -241,6 +254,8 @@ function getMetadata(item) {
   if (getPref("export_related")) {
     metadataString += getRelatedItems(item);
   }
+
+  metadataString += getCites(item);
 
   if (getPref("export_tags")) {
     metadataString += getTags(item) + "\n";
