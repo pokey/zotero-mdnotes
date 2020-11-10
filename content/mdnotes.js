@@ -175,7 +175,7 @@ function getCollectionNames(item) {
   for (let collectionID of collections) {
     var collection = Zotero.Collections.get(collectionID);
     const collectionName = Zotero.Utilities.capitalizeTitle(collection.name, true);
-    collectionArray.push(`#${lowerCaseDashTitle(collectionName)}`);
+    collectionArray.push(formatInternalLink(collectionName));
   }
 
   if (collectionArray.length) {
