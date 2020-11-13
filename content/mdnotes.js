@@ -212,7 +212,7 @@ function getRelatedItems(item) {
 function getMetadata(item) {
   let metadataString = "# Metadata\n";
 
-  metadataString += `| Title | *‘${item.getField("title")}’* |\n`
+  metadataString += `| Title | ${item.getField("title")} |\n`
   metadataString += `| --: | :-- |\n`
 
   if (getPref("export_type")) {
