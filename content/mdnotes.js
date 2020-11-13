@@ -153,7 +153,7 @@ function getTags(item) {
 
   if (itemTags) {
     for (const tag of itemTags) {
-      let tagContent = Zotero.Utilities.capitalizeTitle(tag.tag, true);
+      let tagContent = tag.tag;
 
       if (getPref("tag_format") === "internal") {
         tagContent = formatInternalLink(tagContent);
@@ -174,7 +174,7 @@ function getCollectionNames(item) {
 
   for (let collectionID of collections) {
     var collection = Zotero.Collections.get(collectionID);
-    const collectionName = Zotero.Utilities.capitalizeTitle(collection.name, true);
+    const collectionName = collection.name;
     collectionArray.push(formatInternalLink(collectionName));
   }
 
@@ -419,7 +419,10 @@ function noteToMarkdown(noteContent) {
       }
 
       if (para.innerHTML.startsWith("\"")) {
-        noteString += `> ${para.textContent}\n\n`;
+        const lastQuote = para.textContent.lastIndexOf("\"")
+        const quoteContents = para.textContent.substring(1, lastQuote)
+        const finalContent = para.textContent.substring(lastQuote+1)
+        noteString += `> ${quoteContents}${finalContent}\n\n`;
         continue;
       } // Handle lists
 
