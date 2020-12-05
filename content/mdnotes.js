@@ -738,23 +738,10 @@ Zotero.Mdnotes = Zotero.Mdnotes || new class {
       );
     await Zotero.Schema.schemaUpdatePromise;
 
-    const FilePicker = require("zotero/filePicker").default;
-
-    const fp = new FilePicker();
-    var oldPath = getPref("directory") ? getPref("directory") : OS.Constants.Path.homeDir;
-
-    if (oldPath) {
-      fp.displayDirectory = oldPath;
-    }
-
-    fp.init(window, "Export markdown notes...", fp.modeGetFolder);
-    const rv = await fp.show();
-
-    if (rv === fp.returnOK) {
       for (const item of items) {
         var itemExport = getItemExport(item);
         let attachmentIDs = item.getAttachments();
-        const path = OS.Path.normalize(fp.file);
+        const path = "/Users/pokey/src/zotero-notes-export/References";
         let titleSuffix = getPref("title_suffix");
         var fileName = getFileName(item);
 
@@ -784,7 +771,6 @@ Zotero.Mdnotes = Zotero.Mdnotes || new class {
           this.addLinkToMDNote(outputFile, item.id, attachmentIDs);
         }
       }
-    }
   }
 
   run(method, ...args) {
