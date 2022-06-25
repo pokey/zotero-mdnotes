@@ -30,6 +30,7 @@ const typemap = {
   newspaperArticle: "Newspaper article",
   patent: "Patent",
   podcast: "Podcast",
+  preprint: "Preprint",
   presentation: "Presentation",
   radioBroadcast: "Radio broadcast",
   report: "Report",
