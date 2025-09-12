@@ -8,6 +8,7 @@
   "applications": {
     "zotero": {
       "id": "mdnotes@mdnotes.github.io",
+      "update_url": "https://github.com/argenos/zotero-mdnotes/releases/latest/download/updates.json",
       "strict_min_version": "6.999",
       "strict_max_version": "7.0.*"
     }
