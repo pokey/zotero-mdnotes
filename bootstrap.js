@@ -25,15 +25,12 @@ function startup({ id, version, rootURI, resourceURI }, reason) {
     return;
   }
   
-  // Register chrome resources
-  const aomStartup = Cc["@mozilla.org/addons/addon-manager-startup;1"]
-    .getService(Ci.amIAddonManagerStartup);
-  const manifestURI = Services.io.newURI(rootURI + "manifest.json");
-  chromeHandle = aomStartup.registerChrome(manifestURI, [
-    ["content", "mdnotes", "content/"],
-    ["locale", "mdnotes", "en-US", "locale/en-US/"],
-    ["skin", "mdnotes", "default", "skin/default/"]
-  ]);
+  // Skip chrome registration for now - load resources directly
+  // This works for many Zotero 7 extensions that don't need chrome:// URLs
+  log("Skipping chrome registration - using direct resource loading");
+  
+  // Note: Chrome registration can be added later if chrome:// URLs are specifically needed
+  // For now, we'll load scripts directly using rootURI
   
   // Load the main extension script
   try {
@@ -65,9 +62,13 @@ function startup({ id, version, rootURI, resourceURI }, reason) {
 function shutdown() {
   log("Shutting down");
   
-  // Clean up chrome registration
+  // Clean up chrome registration (if it was created)
   if (chromeHandle) {
-    chromeHandle.destruct();
+    try {
+      chromeHandle.destruct();
+    } catch (e) {
+      log("Error during chrome cleanup: " + e);
+    }
     chromeHandle = null;
   }
   
@@ -112,13 +113,9 @@ function addToWindow(window) {
   
   const doc = window.document;
   
-  // Add stylesheet
-  const styleLink = doc.createElementNS("http://www.w3.org/1999/xhtml", "link");
-  styleLink.rel = "stylesheet";
-  styleLink.type = "text/css";
-  styleLink.href = "chrome://mdnotes/skin/overlay.css";
-  styleLink.id = "mdnotes-stylesheet";
-  doc.documentElement.appendChild(styleLink);
+  // Skip stylesheet for now since chrome:// URLs aren't registered
+  // The extension will work without custom styling initially
+  log("Skipping stylesheet - using default styling");
   
   // Add string bundle
   addStringBundle(doc);
@@ -161,17 +158,9 @@ function removeFromWindow(window) {
 }
 
 function addStringBundle(doc) {
-  // Add string bundle for localization
-  let stringbundleset = doc.getElementById('stringbundleset');
-  if (!stringbundleset) {
-    stringbundleset = doc.createXULElement('stringbundleset');
-    doc.documentElement.appendChild(stringbundleset);
-  }
-  
-  const bundle = doc.createXULElement('stringbundle');
-  bundle.id = 'mdnotes-bundle';
-  bundle.src = 'chrome://mdnotes/locale/mdnotes.properties';
-  stringbundleset.appendChild(bundle);
+  // Skip string bundle for now since chrome:// URLs aren't registered
+  // DTD localization will work from the XUL files directly
+  log("Skipping string bundle - using DTD localization");
 }
 
 function addItemMenuItems(doc) {
