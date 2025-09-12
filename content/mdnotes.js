@@ -1,5 +1,8 @@
-/*globals Zotero, OS, require, Components, window */
+/*globals Zotero, IOUtils, PathUtils, ChromeUtils, Components, window */
 "use strict";
+
+// Import OS compatibility layer for Zotero 7
+var { OS } = ChromeUtils.importESModule("chrome://zotero/content/osfile.mjs");
 
 function getPref(pref_name) {
   return Zotero.Prefs.get(`extensions.mdnotes.${pref_name}`, true);
@@ -590,15 +593,22 @@ Zotero.Mdnotes = Zotero.Mdnotes || new class {
       pane: paneID,
       action
     };
-    window.openDialog(
-      "chrome://mdnotes/content/options.xul",
-      "mdnotes-options",
-      "chrome,titlebar,toolbar,centerscreen" +
-      Zotero.Prefs.get("browser.preferences.instantApply", true) ?
-      "dialog=no" :
-      "modal",
-      io
-    );
+    
+    // For Zotero 7, use the built-in preferences system if available
+    if (typeof Zotero.Prefs.openPreferences === 'function') {
+      Zotero.Prefs.openPreferences('mdnotes@mdnotes.github.io');
+    } else {
+      // Fallback for older versions or direct dialog opening
+      window.openDialog(
+        "chrome://mdnotes/content/options.xhtml",
+        "mdnotes-options",
+        "chrome,titlebar,toolbar,centerscreen" +
+        (Zotero.Prefs.get("browser.preferences.instantApply", true) ?
+        "dialog=no" :
+        "modal"),
+        io
+      );
+    }
   }
 
   async addLinkToMDNote(outputFile, itemID, existingAttachments) {
@@ -630,7 +640,8 @@ Zotero.Mdnotes = Zotero.Mdnotes || new class {
       );
     await Zotero.Schema.schemaUpdatePromise;
 
-    const FilePicker = require("zotero/filePicker").default;
+    // Import FilePicker for Zotero 7 compatibility
+    var { FilePicker } = ChromeUtils.importESModule('chrome://zotero/content/modules/filePicker.mjs');
 
     const fp = new FilePicker();
     var oldPath = getPref("directory") ? getPref("directory") : OS.Constants.Path.homeDir;
@@ -669,7 +680,8 @@ Zotero.Mdnotes = Zotero.Mdnotes || new class {
       Zotero.ItemTypes.getName(item.itemTypeID) === "note");
     await Zotero.Schema.schemaUpdatePromise;
 
-    const FilePicker = require("zotero/filePicker").default;
+    // Import FilePicker for Zotero 7 compatibility
+    var { FilePicker } = ChromeUtils.importESModule('chrome://zotero/content/modules/filePicker.mjs');
 
     const fp = new FilePicker();
     var oldPath = getPref("directory") ? getPref("directory") : OS.Constants.Path.homeDir;
@@ -704,7 +716,8 @@ Zotero.Mdnotes = Zotero.Mdnotes || new class {
       Zotero.ItemTypes.getName(item.itemTypeID) !== "note");
     await Zotero.Schema.schemaUpdatePromise;
 
-    const FilePicker = require("zotero/filePicker").default;
+    // Import FilePicker for Zotero 7 compatibility
+    var { FilePicker } = ChromeUtils.importESModule('chrome://zotero/content/modules/filePicker.mjs');
 
     const fp = new FilePicker();
     var oldPath = getPref("directory") ? getPref("directory") : OS.Constants.Path.homeDir;
@@ -742,7 +755,9 @@ Zotero.Mdnotes = Zotero.Mdnotes || new class {
       for (const item of items) {
         var itemExport = getItemExport(item);
         let attachmentIDs = item.getAttachments();
-        const path = "/Users/pokey/src/zotero-notes-export/References";
+        // Use the configured directory or fallback to user's home directory
+        const configuredPath = getPref("directory");
+        const path = configuredPath || OS.Constants.Path.homeDir;
         let titleSuffix = getPref("title_suffix");
         var fileName = getFileName(item);
 

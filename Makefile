@@ -8,7 +8,7 @@ PREVRELEASE:=$(shell git tag --sort version:refname | tail -n 2 | head -n 1)
 
 mdnotes.xpi: FORCE
 	rm -rf $@
-	zip -r $@ content chrome.manifest defaults locale skin install.rdf update.rdf -x \*.DS_Store
+	zip -r $@ bootstrap.js content defaults locale skin install.rdf manifest.json prefs.js -x \*.DS_Store \*chrome.manifest
 
 mdnotes-%-fx.xpi: mdnotes.xpi
 	mv $< $@
