@@ -42,12 +42,18 @@ function startup({ id, version, rootURI, resourceURI }, reason) {
   
   // Register preference pane
   if (Zotero.PreferencePanes) {
-    Zotero.PreferencePanes.register({
-      pluginID: id,
-      src: "content/options.xhtml",
-      scripts: ["content/options.js"],
-      stylesheets: ["skin/default/options.css"]
-    });
+    try {
+      Zotero.PreferencePanes.register({
+        pluginID: id,
+        src: rootURI + "content/options.xhtml",
+        label: "Mdnotes",
+        image: "chrome://zotero/skin/preferences/general.svg",
+        scripts: [rootURI + "content/options.js"]
+      });
+      log("Preference pane registered successfully");
+    } catch (e) {
+      log("Failed to register preference pane: " + e);
+    }
   }
   
   // Initialize the extension for existing windows

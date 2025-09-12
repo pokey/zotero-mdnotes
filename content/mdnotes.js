@@ -589,25 +589,20 @@ function getMDNoteFileContents(item, fileName, titleSuffix) {
 
 Zotero.Mdnotes = Zotero.Mdnotes || new class {
   async openPreferenceWindow(paneID, action) {
-    const io = {
-      pane: paneID,
-      action
-    };
-    
-    // For Zotero 7, use the built-in preferences system if available
-    if (typeof Zotero.Prefs.openPreferences === 'function') {
+    // For Zotero 7, use the built-in preferences system
+    if (Zotero.Prefs && typeof Zotero.Prefs.openPreferences === 'function') {
       Zotero.Prefs.openPreferences('mdnotes@mdnotes.github.io');
-    } else {
-      // Fallback for older versions or direct dialog opening
+    } else if (window && window.openDialog) {
+      // Fallback: try to open the preferences directly
+      const io = { pane: paneID, action };
       window.openDialog(
-        "chrome://mdnotes/content/options.xhtml",
-        "mdnotes-options",
-        "chrome,titlebar,toolbar,centerscreen" +
-        (Zotero.Prefs.get("browser.preferences.instantApply", true) ?
-        "dialog=no" :
-        "modal"),
-        io
+        "chrome://zotero/content/preferences/preferences.xul",
+        "zotero-prefs",
+        "chrome,titlebar,toolbar,centerscreen,dialog=no",
+        { pane: 'mdnotes@mdnotes.github.io' }
       );
+    } else {
+      Zotero.debug("Mdnotes: Unable to open preferences window");
     }
   }
 
